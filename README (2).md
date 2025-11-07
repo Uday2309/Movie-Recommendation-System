@@ -34,9 +34,6 @@ movie-recommendation-system/
 ├── app.py
 ├── preprocess.py
 ├── dataset.csv
-├── movie_dict.pkl
-├── similarity.pkl
-├── requirements.txt
 └── README.md
 ```
 
