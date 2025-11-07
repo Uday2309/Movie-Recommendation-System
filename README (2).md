@@ -37,21 +37,7 @@ movie-recommendation-system/
 └── README.md
 ```
 
----
 
-## ⚙️ Setup & Run
-
-```bash
-git clone https://github.com/<your-username>/movie-recommendation-system.git
-cd movie-recommendation-system
-pip install -r requirements.txt
-python preprocess.py       # if not done
-streamlit run app.py
-```
-
-Open in browser: `http://localhost:8501`
-
----
 
 ## 🎯 How It Works
 
