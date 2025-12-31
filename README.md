@@ -34,6 +34,7 @@ movie-recommendation-system/
 ├── app.py
 ├── preprocess.py
 ├── dataset.csv
+├──requirements.txt
 └── README.md
 ```
 
