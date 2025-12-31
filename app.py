@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -9,32 +8,39 @@ st.set_page_config(page_title="Movie Recommendation System", layout="wide")
 st.title("🎬 Movie Recommendation System")
 st.write("Content-based recommendation using TF-IDF & Cosine Similarity")
 
-# Load dataset
-movies = pd.read_csv("dataset.csv")
+# ---------------- CACHE HEAVY WORK ----------------
+@st.cache_resource
+def load_model():
+    movies = pd.read_csv("dataset.csv")
 
-# Handle missing values
-movies['genre'] = movies['genre'].fillna('')
-movies['overview'] = movies['overview'].fillna('')
-movies['original_language'] = movies['original_language'].fillna('unknown')
-movies['release_date'] = movies['release_date'].fillna('0000')
+    # Handle missing values
+    movies['genre'] = movies['genre'].fillna('')
+    movies['overview'] = movies['overview'].fillna('')
+    movies['original_language'] = movies['original_language'].fillna('unknown')
+    movies['release_date'] = movies['release_date'].fillna('0000')
 
-# Combine features
-movies['tags'] = movies['genre'] + ' ' + movies['overview']
+    # Combine features
+    movies['tags'] = movies['genre'] + ' ' + movies['overview']
 
-new_df = movies[['title', 'tags', 'vote_average', 'original_language', 'release_date']]
+    new_df = movies[['title', 'tags', 'vote_average', 'original_language', 'release_date']]
 
-# TF-IDF
-tfidf = TfidfVectorizer(max_features=10000, stop_words='english')
-vectors = tfidf.fit_transform(new_df['tags'])
+    # TF-IDF
+    tfidf = TfidfVectorizer(max_features=10000, stop_words='english')
+    vectors = tfidf.fit_transform(new_df['tags'])
 
-# Cosine similarity
-similarity = cosine_similarity(vectors)
+    # Cosine similarity
+    similarity = cosine_similarity(vectors)
 
-# Normalize rating
-movies['vote_average_norm'] = (
-    (movies['vote_average'] - movies['vote_average'].min()) /
-    (movies['vote_average'].max() - movies['vote_average'].min())
-)
+    # Normalize ratings
+    movies['vote_average_norm'] = (
+        (movies['vote_average'] - movies['vote_average'].min()) /
+        (movies['vote_average'].max() - movies['vote_average'].min())
+    )
+
+    return movies, new_df, similarity
+
+movies, new_df, similarity = load_model()
+# -------------------------------------------------
 
 # UI inputs
 movie_name = st.selectbox("🎥 Select a movie", new_df['title'].values)
@@ -83,4 +89,3 @@ if st.button("🚀 Recommend"):
     else:
         st.success("Top Recommended Movies")
         st.dataframe(result, use_container_width=True)
-
